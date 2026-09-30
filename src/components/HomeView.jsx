@@ -178,7 +178,7 @@ export default function HomeView() {
                   <motion.div 
                     initial={{ scale: 0, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true, margin: "-60px" }}
+                    viewport={{ once: false, amount: 0.3 }}
                     transition={{ duration: 0.4, delay: 0.15 }}
                     className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center w-11 h-11 rounded-full bg-slate-950 text-white font-mono font-bold text-xs z-20 shadow-[0_4px_14px_rgba(0,0,0,0.18)] ring-4 ring-white"
                   >
@@ -194,7 +194,7 @@ export default function HomeView() {
                   <motion.article
                     initial={{ opacity: 0, x: isEven ? 60 : -60, scale: 0.97 }}
                     whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                    viewport={{ once: true, margin: "-70px" }}
+                    viewport={{ once: false, amount: 0.2, margin: "-40px" }}
                     transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
                     className={`w-full md:w-[calc(50%-3rem)] pl-14 md:pl-0 ${
                       isEven ? 'md:ml-auto' : 'md:mr-auto'
@@ -325,7 +325,7 @@ export default function HomeView() {
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 40 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="mt-20 md:mt-28 relative z-20 max-w-2xl mx-auto text-center"
           >
