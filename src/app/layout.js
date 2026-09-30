@@ -134,7 +134,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col font-sans antialiased text-slate-900 bg-[#edf4fa] selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
         <WebsiteBackground />
         <Navbar />
-        <main className="flex-grow z-10 relative">
+        <main className="flex-grow z-10 relative overflow-x-hidden max-w-full">
           {children}
         </main>
         <Footer />

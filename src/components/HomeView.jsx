@@ -71,7 +71,7 @@ export default function HomeView() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen overflow-x-hidden max-w-full w-full">
       {/* Hero Section */}
       <section className="px-6 pt-4 md:pt-8 pb-20 max-w-7xl mx-auto w-full flex flex-col items-start text-left relative z-10 min-h-[calc(100vh-120px)] justify-center">
         
@@ -122,7 +122,7 @@ export default function HomeView() {
       </section>
 
       {/* Modern High-End Monochromatic 3D Showcase Section */}
-      <section id="how-it-works" className="px-6 py-24 max-w-6xl mx-auto w-full relative z-10 scroll-mt-12">
+      <section id="how-it-works" className="px-4 sm:px-6 py-20 sm:py-24 max-w-6xl mx-auto w-full relative z-10 scroll-mt-12 overflow-x-clip max-w-full">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-20 sm:mb-24">
@@ -151,7 +151,7 @@ export default function HomeView() {
 
           {/* Left Timeline Track (Mobile) */}
           <div 
-            className="absolute left-6 top-4 bottom-4 w-[1.5px] -translate-x-1/2 rounded-full md:hidden pointer-events-none"
+            className="absolute left-5 sm:left-6 top-4 bottom-4 w-[1.5px] -translate-x-1/2 rounded-full md:hidden pointer-events-none"
             style={{
               background: 'linear-gradient(to bottom, #cbd5e1, #475569, #cbd5e1)'
             }}
@@ -178,17 +178,17 @@ export default function HomeView() {
                   </motion.div>
 
                   {/* Mobile Node Marker */}
-                  <div className="absolute left-6 -translate-x-1/2 flex md:hidden items-center justify-center w-8 h-8 rounded-full bg-slate-950 text-white font-mono font-bold text-[11px] z-20 shadow-[0_2px_8px_rgba(0,0,0,0.15)] ring-2 ring-white">
+                  <div className="absolute left-5 sm:left-6 -translate-x-1/2 flex md:hidden items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-950 text-white font-mono font-bold text-[10px] sm:text-[11px] z-20 shadow-[0_2px_8px_rgba(0,0,0,0.15)] ring-2 ring-white">
                     <span>{item.step}</span>
                   </div>
 
                   {/* Alternating Card Container */}
                   <motion.article
-                    initial={{ opacity: 0, x: isEven ? 60 : -60, scale: 0.97 }}
-                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                    viewport={{ once: false, amount: 0.2, margin: "-40px" }}
-                    transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                    className={`w-full md:w-[calc(50%-3rem)] pl-14 md:pl-0 ${
+                    initial={{ opacity: 0, y: 28, scale: 0.98 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.15, margin: "-20px" }}
+                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                    className={`w-full md:w-[calc(50%-2.5rem)] pl-11 sm:pl-14 md:pl-0 max-w-full ${
                       isEven ? 'md:ml-auto' : 'md:mr-auto'
                     }`}
                   >

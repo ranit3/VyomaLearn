@@ -10,7 +10,7 @@ const DEFAULT_REVIEWS = [
     type: "video",
     rating: 5,
     quote: "",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    videoUrl: "https://tmlnfaeeglawwsrmvvab.supabase.co/storage/v1/object/public/reviews-media/sample_review_aarav.mp4",
     videoDuration: "1:42",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
     active: true
@@ -34,7 +34,7 @@ const DEFAULT_REVIEWS = [
     type: "video",
     rating: 5,
     quote: "",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4",
+    videoUrl: "https://tmlnfaeeglawwsrmvvab.supabase.co/storage/v1/object/public/reviews-media/sample_review_devendra.mp4",
     videoDuration: "2:08",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
     active: true
@@ -58,7 +58,7 @@ const DEFAULT_REVIEWS = [
     type: "video",
     rating: 5,
     quote: "",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    videoUrl: "https://tmlnfaeeglawwsrmvvab.supabase.co/storage/v1/object/public/reviews-media/sample_review_rohan.mp4",
     videoDuration: "1:15",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
     active: true
