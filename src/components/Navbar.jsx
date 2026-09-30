@@ -12,25 +12,25 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="relative w-full z-50 px-6 py-5 md:py-6 bg-transparent">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header className="relative w-full z-50 px-4 sm:px-6 py-4 md:py-6 bg-transparent">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
         <Link 
           href="/" 
-          className="flex items-center gap-3.5 group" 
+          className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0" 
           title="Vyoma Learn (VyomaLearn)" 
           aria-label="Vyoma Learn Home"
         >
           <BrandLogo 
             alt="Vyoma Learn Logo" 
-            className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-sm group-hover:scale-105 transition-transform" 
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 shrink-0 object-contain drop-shadow-sm group-hover:scale-105 transition-transform" 
           />
-          <span className="font-brand font-bold text-2xl md:text-[26px] tracking-tight text-slate-950 select-none">
+          <span className="font-brand font-bold text-xl sm:text-2xl md:text-[26px] tracking-tight text-slate-950 select-none">
             VyomaLearn<span className="text-slate-950">.</span>
           </span>
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-10">
+        <nav className="hidden md:flex items-center gap-8 lg:gap-10">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.path;
             return (
@@ -50,10 +50,10 @@ export default function Navbar() {
         </nav>
 
         {/* Action Button & Mobile Menu Toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <a
             href={`${PLATFORM_URL}/login`}
-            className="px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
           >
             <span>Get Started</span>
             <ArrowRight size={14} className="hidden sm:inline" />
@@ -62,7 +62,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-800 hover:bg-white/60 rounded-xl transition-colors"
+            className="md:hidden p-2 text-slate-800 hover:bg-white/60 rounded-xl transition-colors shrink-0"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
