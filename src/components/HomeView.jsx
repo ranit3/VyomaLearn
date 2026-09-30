@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 import { 
   ArrowRight, LogIn, Compass, Layers, Zap, BookOpen, 
   FileCheck2, RefreshCw, MessageSquare, CheckCircle2,
-  Sparkles, Check, BrainCircuit, ShieldCheck, ArrowUpRight
+  Sparkles, Check, BrainCircuit
 } from 'lucide-react';
 import { PLATFORM_URL } from '@/lib/constants';
+import ReviewsGallery from './ReviewsGallery';
 
 export default function HomeView() {
   const steps = [
@@ -151,7 +152,7 @@ export default function HomeView() {
           
           {/* Central Architectural Spine (Desktop) */}
           <div 
-            className="absolute left-1/2 top-4 bottom-12 w-[1.5px] -translate-x-1/2 rounded-full hidden md:block pointer-events-none"
+            className="absolute left-1/2 top-4 bottom-4 w-[1.5px] -translate-x-1/2 rounded-full hidden md:block pointer-events-none"
             style={{
               background: 'linear-gradient(to bottom, #cbd5e1, #475569, #cbd5e1)'
             }}
@@ -159,7 +160,7 @@ export default function HomeView() {
 
           {/* Left Timeline Track (Mobile) */}
           <div 
-            className="absolute left-6 top-4 bottom-12 w-[1.5px] -translate-x-1/2 rounded-full md:hidden pointer-events-none"
+            className="absolute left-6 top-4 bottom-4 w-[1.5px] -translate-x-1/2 rounded-full md:hidden pointer-events-none"
             style={{
               background: 'linear-gradient(to bottom, #cbd5e1, #475569, #cbd5e1)'
             }}
@@ -168,7 +169,7 @@ export default function HomeView() {
           {/* Cards Pipeline */}
           <div className="flex flex-col space-y-12 sm:space-y-16 md:space-y-24">
             {steps.map((item, index) => {
-              const isEven = index % 2 !== 0; // index 0 is step 1 (odd -> left), index 1 is step 2 (even -> right)
+              const isEven = index % 2 !== 0;
               const IconComponent = item.icon;
 
               return (
@@ -176,10 +177,10 @@ export default function HomeView() {
                   
                   {/* Central Solid 3D Node Marker (Desktop) */}
                   <motion.div 
-                    initial={{ scale: 0, opacity: 0 }}
+                    initial={{ scale: 0.5, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: false, amount: 0.3 }}
-                    transition={{ duration: 0.4, delay: 0.15 }}
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                     className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center w-11 h-11 rounded-full bg-slate-950 text-white font-mono font-bold text-xs z-20 shadow-[0_4px_14px_rgba(0,0,0,0.18)] ring-4 ring-white"
                   >
                     <span>{item.step}</span>
@@ -227,7 +228,7 @@ export default function HomeView() {
                         {item.description}
                       </p>
 
-                      {/* Dual Track Custom Component (Step 3) - High-End Monochrome Contrast */}
+                      {/* Dual Track Custom Component (Step 3) */}
                       {item.isDualTrack && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 mt-2">
                           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
@@ -251,7 +252,7 @@ export default function HomeView() {
                         </div>
                       )}
 
-                      {/* Dual Syllabus Custom Component (Step 4) - Crisp Architecture */}
+                      {/* Dual Syllabus Custom Component (Step 4) */}
                       {item.isDualSyllabus && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 mt-2">
                           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
@@ -275,7 +276,7 @@ export default function HomeView() {
                         </div>
                       )}
 
-                      {/* Remediation Feedback Loop (Step 6) - Crisp Dark Monochromatic Banner */}
+                      {/* Remediation Feedback Loop (Step 6) */}
                       {item.isRemediation && (
                         <div className="p-4 rounded-2xl bg-slate-950 text-white shadow-sm flex items-center gap-3 border border-slate-800 mt-2">
                           <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
@@ -321,44 +322,50 @@ export default function HomeView() {
             })}
           </div>
 
-          {/* Grand Milestone Achievement Card - Obsidian Black & Pure White */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94, y: 40 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-20 md:mt-28 relative z-20 max-w-2xl mx-auto text-center"
-          >
-            <div className="p-8 sm:p-12 rounded-3xl bg-[#09090b] text-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden">
-              <div className="w-14 h-14 rounded-2xl bg-white/10 text-white border border-white/15 flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <CheckCircle2 size={30} />
-              </div>
-
-              <span className="text-[11px] font-mono font-bold text-slate-300 tracking-widest uppercase bg-white/10 px-3.5 py-1 rounded-full border border-white/10 mb-4 inline-block">
-                Final Milestone
-              </span>
-
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 text-white">
-                Durable Conceptual Mastery Achieved
-              </h3>
-
-              <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-8 font-normal">
-                You never leave a topic with unresolved confusion. By validating micro-axioms through Bloom's Taxonomy, deep understanding becomes permanent.
-              </p>
-
-              <a
-                href={`${PLATFORM_URL}/login`}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-slate-100 text-slate-950 font-bold rounded-full text-sm sm:text-base shadow-[0_10px_25px_-5px_rgba(255,255,255,0.3)] hover:shadow-2xl hover:-translate-y-0.5 transition-all cursor-pointer group"
-              >
-                <span>Start Your Learning Journey</span>
-                <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform" />
-              </a>
-            </div>
-          </motion.div>
-
         </div>
 
       </section>
+
+      {/* Horizontal Sliding Reviews Gallery with Student Photos & Videos */}
+      <ReviewsGallery />
+
+      {/* Final Grand Milestone & Platform Entry */}
+      <section className="px-6 pb-24 max-w-4xl mx-auto w-full relative z-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 40 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-20 max-w-2xl mx-auto text-center"
+        >
+          <div className="p-8 sm:p-12 rounded-3xl bg-[#09090b] text-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] border border-white/10 relative overflow-hidden">
+            <div className="w-14 h-14 rounded-2xl bg-white/10 text-white border border-white/15 flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <CheckCircle2 size={30} />
+            </div>
+
+            <span className="text-[11px] font-mono font-bold text-slate-300 tracking-widest uppercase bg-white/10 px-3.5 py-1 rounded-full border border-white/10 mb-4 inline-block">
+              Final Milestone
+            </span>
+
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 text-white">
+              Durable Conceptual Mastery Achieved
+            </h3>
+
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-8 font-normal">
+              You never leave a topic with unresolved confusion. By validating micro-axioms through Bloom's Taxonomy, deep understanding becomes permanent.
+            </p>
+
+            <a
+              href={`${PLATFORM_URL}/login`}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-slate-100 text-slate-950 font-bold rounded-full text-sm sm:text-base shadow-[0_10px_25px_-5px_rgba(255,255,255,0.3)] hover:shadow-2xl hover:-translate-y-0.5 transition-all cursor-pointer group"
+            >
+              <span>Start Your Learning Journey</span>
+              <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform" />
+            </a>
+          </div>
+        </motion.div>
+      </section>
+
     </div>
   );
 }
