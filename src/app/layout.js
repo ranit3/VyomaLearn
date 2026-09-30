@@ -1,7 +1,8 @@
-﻿import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WebsiteBackground from "@/components/WebsiteBackground";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -41,11 +42,6 @@ export const metadata = {
   ],
   creator: 'Ranit Purkait & Saddam Hussain',
   publisher: 'Vyoma Learn',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
   openGraph: {
     title: 'Vyoma Learn (VyomaLearn) — Agentic AI Personalized Learning Platform',
     description: 'Autonomous Agentic AI that maps your curriculum, diagnoses cognitive gaps, and adapts lessons in real-time.',
@@ -135,9 +131,10 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-stone-50/50 dark:bg-stone-950 text-slate-900 dark:text-stone-100 antialiased selection:bg-blue-600 selection:text-white">
+      <body className="min-h-full flex flex-col font-sans antialiased text-slate-900 bg-[#edf4fa] selection:bg-blue-600 selection:text-white relative overflow-x-hidden">
+        <WebsiteBackground />
         <Navbar />
-        <main className="flex-grow pt-16 md:pt-20">
+        <main className="flex-grow z-10 relative">
           {children}
         </main>
         <Footer />
