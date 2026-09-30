@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Check, Star, Zap, Shield, Gift, ArrowRight } from 'lucide-react';
 import { PLATFORM_URL } from '@/lib/constants';
 
@@ -75,7 +75,7 @@ export default function SubscriptionsPage() {
   ];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 pt-12 pb-24 relative z-10">
+    <div className="w-full max-w-7xl mx-auto px-6 pt-6 md:pt-10 pb-20 relative z-10">
       {/* Header Section */}
       <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold mb-4 shadow-xs">

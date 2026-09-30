@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { BookOpen, FileCheck2, Users2, Languages, Palette, LayoutTemplate, Code2, Mail, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { DEVELOPERS } from '@/lib/constants';
 
@@ -91,7 +91,7 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
       />
 
-      <div className="pt-16 pb-24 px-6 max-w-7xl mx-auto w-full relative z-10">
+      <div className="pt-6 md:pt-10 pb-20 px-6 max-w-7xl mx-auto w-full relative z-10">
         
         {/* Hero Section */}
         <div className="mb-24 flex flex-col items-start text-left">

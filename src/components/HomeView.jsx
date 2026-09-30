@@ -13,7 +13,7 @@ export default function HomeView() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section (First Instance — Exact Original Design over Vanta waves) */}
-      <section className="px-6 pt-10 md:pt-14 pb-20 max-w-7xl mx-auto w-full flex flex-col items-start text-left relative z-10 min-h-[calc(100vh-7rem)] justify-center">
+      <section className="px-6 pt-4 md:pt-8 pb-20 max-w-7xl mx-auto w-full flex flex-col items-start text-left relative z-10 min-h-[calc(100vh-120px)] justify-center">
         
         <motion.h1 
           initial={{ opacity: 0, y: 10 }}

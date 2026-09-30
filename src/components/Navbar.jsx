@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ArrowRight, Menu, X } from 'lucide-react';
@@ -10,22 +10,9 @@ import { PLATFORM_URL, NAV_LINKS } from '@/lib/constants';
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 w-full px-6 py-4 md:py-5 transition-all duration-300 ${
-      scrolled 
-        ? 'bg-white/70 backdrop-blur-xl border-b border-slate-200/50 shadow-xs' 
-        : 'bg-transparent'
-    }`}>
+    <header className="relative w-full z-50 px-6 py-5 md:py-6 bg-transparent">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link 
           href="/" 

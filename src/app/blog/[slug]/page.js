@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Calendar, Clock, ArrowLeft, ArrowRight, Share2, Sparkles, BookOpen } from 'lucide-react';
@@ -100,7 +100,7 @@ export default async function BlogPostPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <article className="pt-10 pb-24 px-6 max-w-4xl mx-auto w-full relative z-10">
+      <article className="pt-6 pb-20 px-6 max-w-4xl mx-auto w-full relative z-10">
         
         {/* Back Link */}
         <div className="mb-8">

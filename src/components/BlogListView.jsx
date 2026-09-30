@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -35,9 +35,9 @@ export default function BlogListView({ initialBlogs = [] }) {
   }, [initialBlogs, selectedCategory, searchQuery]);
 
   return (
-    <div className="flex flex-col pt-8 pb-24">
+    <div className="flex flex-col pt-4 pb-20">
       {/* Header Section */}
-      <section className="px-6 pt-4 pb-12 max-w-7xl mx-auto w-full text-center relative z-10">
+      <section className="px-6 pt-2 pb-10 max-w-7xl mx-auto w-full text-center relative z-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-semibold mb-4">
           <span>Articles, Research & Educational Science</span>
         </div>
