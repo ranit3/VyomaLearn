@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { MessageCircle, Code, Globe } from 'lucide-react';
 import BrandLogo from './BrandLogo';
@@ -24,7 +24,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a 
-                href="https://github.com/ranit3/Vyoma_learn" 
+                href="https://github.com/ranit3/VyomaLearn" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-slate-400 hover:text-blue-600 transition-colors"
