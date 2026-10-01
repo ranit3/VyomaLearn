@@ -46,6 +46,7 @@ export default function Footer() {
             <h3 className="font-semibold mb-4 text-slate-900">Product</h3>
             <ul className="space-y-3 text-sm text-slate-500">
               <li><Link href="/#how-it-works" className="hover:text-blue-600 transition-colors">How It Works</Link></li>
+              <li><Link href="/#faq" className="hover:text-blue-600 transition-colors">FAQ</Link></li>
               <li><Link href="/about" className="hover:text-blue-600 transition-colors">About Us</Link></li>
               <li><Link href="/subscriptions" className="hover:text-blue-600 transition-colors">Pricing</Link></li>
               <li><a href={`${PLATFORM_URL}/login`} className="hover:text-blue-600 transition-colors">Sign In</a></li>

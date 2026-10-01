@@ -377,7 +377,7 @@ export default function ReviewsGallery() {
                 ) : (
                   <div className="mt-2">
                     <p className="text-slate-800 text-xs sm:text-sm leading-relaxed italic relative line-clamp-4">
-                      "{review.quote}"
+                      &ldquo;{review.quote}&rdquo;
                     </p>
                   </div>
                 )}

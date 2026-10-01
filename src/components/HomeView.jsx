@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { PLATFORM_URL } from '@/lib/constants';
 import ReviewsGallery from './ReviewsGallery';
+import HomeBlogSection from './HomeBlogSection';
+import HomeFAQSection from './HomeFAQSection';
 
 export default function HomeView() {
   const steps = [
@@ -320,7 +322,11 @@ export default function HomeView() {
       {/* Horizontal Sliding Reviews Gallery with Student Photos & Videos */}
       <ReviewsGallery />
 
-      
+      {/* Blog Section */}
+      <HomeBlogSection />
+
+      {/* FAQ Section */}
+      <HomeFAQSection />
 
     </div>
   );
