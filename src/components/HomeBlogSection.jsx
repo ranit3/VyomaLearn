@@ -1,13 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
-import { getAllBlogs } from '@/lib/blogs';
+import { getStaticBlogs } from '@/lib/blogs';
 
 export default function HomeBlogSection() {
-  const blogs = getAllBlogs().slice(0, 3);
+  const [blogs, setBlogs] = useState(() => getStaticBlogs().slice(0, 3));
+
+  useEffect(() => {
+    fetch('/api/blogs')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setBlogs(data.slice(0, 3));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const getCategoryBadge = (category) => {
     switch (category) {
@@ -34,111 +45,91 @@ export default function HomeBlogSection() {
               <span>Pedagogical Science & Insights</span>
             </div>
             
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-950 mb-3">
-              Explore Our Latest Insights
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-950 leading-tight">
+              Deep Dives into Cognitive AI & Socratic Education
             </h2>
-            
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-              Discover the research behind real-time cognitive modeling, Socratic AI dialogue, and how VyomaLearn builds profound, durable conceptual mastery.
+            <p className="mt-4 text-slate-600 text-base sm:text-lg font-normal">
+              Explore our latest research on cognitive load theory, adaptive pacing, and self-directed mastery.
             </p>
           </div>
 
-          <div className="hidden md:flex items-center shrink-0">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-900 text-sm font-semibold shadow-sm hover:shadow-md transition-all group"
-            >
-              <span>View All Articles</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-900 font-semibold text-sm shadow-sm hover:shadow transition-all group shrink-0"
+          >
+            <span>View All Insights</span>
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
 
-        {/* Blog Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Blog Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {blogs.map((post, idx) => (
             <motion.article
               key={post.id}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="group bg-white/95 backdrop-blur-xl border border-slate-200/90 rounded-3xl overflow-hidden shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.04)] hover:-translate-y-1.5 hover:border-slate-300 transition-all duration-300 flex flex-col h-full"
+              className="flex flex-col bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_30px_-6px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 group"
             >
-              <Link href={`/blog/${post.slug || post.id}`} className="flex flex-col h-full">
-                
-                {/* Image Banner */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100 shrink-0">
+              {/* Image Container */}
+              <Link href={`/blog/${post.slug || post.id}`} className="aspect-[16/10] w-full overflow-hidden bg-slate-100 relative block">
+                {post.imageUrl ? (
                   <img
                     src={post.imageUrl}
                     alt={post.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
-                  
-                  {/* Floating Category Pill */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className={`inline-flex items-center text-[11px] font-bold px-3 py-1 rounded-full border shadow-sm backdrop-blur-md bg-white/95 ${getCategoryBadge(post.category)}`}>
-                      {post.category}
-                    </span>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-600 font-bold">
+                    VyomaLearn
                   </div>
-
-                  {/* Read Time Tag */}
-                  <div className="absolute bottom-3 right-3 z-10">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-950/75 text-white backdrop-blur-md">
-                      <Clock size={12} />
-                      {post.readTime}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Card Content Body */}
-                <div className="p-6 sm:p-7 flex flex-col flex-grow">
-                  
-                  {/* Metadata Row */}
-                  <div className="flex items-center gap-3 text-xs text-slate-500 mb-3 font-medium">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar size={13} className="text-slate-400" />
-                      {post.date}
-                    </span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-slate-600 truncate">{post.author}</span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-950 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2 leading-snug mb-3">
-                    {post.title}
-                  </h3>
-
-                  {/* Excerpt */}
-                  <p className="text-sm text-slate-600 leading-relaxed line-clamp-3 mb-6 flex-grow">
-                    {post.excerpt}
-                  </p>
-
-                  {/* Read More Footer */}
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors mt-auto">
-                    <span>Read Article</span>
-                    <div className="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-blue-50 group-hover:text-blue-600 text-slate-700 flex items-center justify-center transition-all duration-200 group-hover:translate-x-1">
-                      <ArrowRight size={14} />
-                    </div>
-                  </div>
-
+                )}
+                <div className="absolute top-4 left-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold border shadow-sm backdrop-blur-md ${getCategoryBadge(post.category)}`}>
+                    {post.category}
+                  </span>
                 </div>
               </Link>
+
+              {/* Content Container */}
+              <div className="p-6 sm:p-7 flex flex-col flex-grow">
+                <div className="flex items-center gap-4 text-xs text-slate-500 mb-3 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={13} />
+                    {post.date}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={13} />
+                    {post.readTime}
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-3">
+                  <Link href={`/blog/${post.slug || post.id}`}>
+                    {post.title}
+                  </Link>
+                </h3>
+
+                <p className="text-slate-600 text-sm font-normal line-clamp-3 leading-relaxed mb-6 flex-grow">
+                  {post.excerpt}
+                </p>
+
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600 group-hover:text-blue-700">
+                  <span className="text-slate-500 font-medium">By {post.author}</span>
+                  <Link 
+                    href={`/blog/${post.slug || post.id}`}
+                    className="inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
+                  >
+                    <span>Read Article</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
             </motion.article>
           ))}
-        </div>
-
-        {/* Mobile View All Button */}
-        <div className="mt-8 flex md:hidden justify-center">
-          <Link
-            href="/blog"
-            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-full bg-white border border-slate-200 text-slate-900 text-sm font-semibold shadow-sm hover:shadow-md transition-all"
-          >
-            <span>View All Articles</span>
-            <ArrowRight size={16} />
-          </Link>
         </div>
 
       </div>

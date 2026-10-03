@@ -1,12 +1,14 @@
-﻿import { getAllBlogs } from '@/lib/blogs';
+import { getAllBlogs } from '@/lib/blogs';
+
+export const revalidate = 60;
 
 export default async function sitemap() {
   const baseUrl = 'https://vyomalearn.in';
-  const blogs = getAllBlogs();
+  const blogs = await getAllBlogs();
 
   const blogEntries = blogs.map((post) => ({
     url: `${baseUrl}/blog/${post.slug || post.id}`,
-    lastModified: new Date('2026-09-18'),
+    lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
   }));
