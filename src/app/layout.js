@@ -17,7 +17,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://vyomalearn.in'),
+  metadataBase: new URL('https://www.vyomalearn.in'),
   title: {
     default: 'Vyoma Learn (VyomaLearn) — Agentic AI Personalized Learning Platform',
     template: '%s | Vyoma Learn (VyomaLearn)',
@@ -45,7 +45,7 @@ export const metadata = {
   openGraph: {
     title: 'Vyoma Learn (VyomaLearn) — Agentic AI Personalized Learning Platform',
     description: 'Autonomous Agentic AI that maps your curriculum, diagnoses cognitive gaps, and adapts lessons in real-time.',
-    url: 'https://vyomalearn.in',
+    url: 'https://www.vyomalearn.in',
     siteName: 'Vyoma Learn',
     locale: 'en_IN',
     type: 'website',
@@ -84,13 +84,13 @@ export default function RootLayout({ children }) {
     "@graph": [
       {
         "@type": "EducationalOrganization",
-        "@id": "https://vyomalearn.in/#organization",
+        "@id": "https://www.vyomalearn.in/#organization",
         "name": "Vyoma Learn",
         "alternateName": ["VyomaLearn", "vyomalearn.in"],
-        "url": "https://vyomalearn.in",
+        "url": "https://www.vyomalearn.in",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://vyomalearn.in/logo.png",
+          "url": "https://www.vyomalearn.in/logo.png",
           "caption": "Vyoma Learn Logo"
         },
         "founder": [
@@ -114,10 +114,10 @@ export default function RootLayout({ children }) {
       {
         "@type": "WebSite",
         "@id": "https://vyomalearn.in/#website",
-        "url": "https://vyomalearn.in",
+        "url": "https://www.vyomalearn.in",
         "name": "Vyoma Learn",
         "publisher": {
-          "@id": "https://vyomalearn.in/#organization"
+          "@id": "https://www.vyomalearn.in/#organization"
         }
       }
     ]

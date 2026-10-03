@@ -1,4 +1,4 @@
-﻿export default function robots() {
+export default function robots() {
   return {
     rules: [
       {
@@ -10,7 +10,7 @@
         allow: '/',
       },
     ],
-    sitemap: 'https://vyomalearn.in/sitemap.xml',
-    host: 'https://vyomalearn.in',
+    sitemap: 'https://www.vyomalearn.in/sitemap.xml',
+    host: 'https://www.vyomalearn.in',
   };
 }
