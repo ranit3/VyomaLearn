@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Calendar, Clock, ArrowLeft, ArrowRight, Share2, Sparkles, BookOpen } from 'lucide-react';
@@ -104,8 +105,7 @@ export default async function BlogPostPage({ params }) {
     }
   };
 
-  // Convert markdown content to styled paragraphs
-  const paragraphs = (post.content || '').split('\n\n');
+  const articleBody = post.content || '';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -189,50 +189,97 @@ export default async function BlogPostPage({ params }) {
         )}
 
         {/* Article Body */}
-        <div className="prose prose-slate max-w-none space-y-6 text-slate-700 leading-relaxed text-base sm:text-lg">
-          {paragraphs.map((para, i) => {
-            const trimmed = para.trim();
-            if (trimmed.startsWith('# ')) {
-              return null; // Skip redundant H1 since it's above
-            }
-            if (trimmed.startsWith('### ')) {
-              return (
-                <h3 key={i} className="text-2xl font-bold text-slate-900 mt-10 mb-4 tracking-tight">
-                  {trimmed.replace('### ', '')}
-                </h3>
-              );
-            }
-            if (trimmed.startsWith('#### ')) {
-              return (
-                <h4 key={i} className="text-xl font-bold text-slate-900 mt-8 mb-3 tracking-tight">
-                  {trimmed.replace('#### ', '')}
-                </h4>
-              );
-            }
-            if (trimmed.startsWith('## ')) {
-              return (
-                <h2 key={i} className="text-2xl sm:text-3xl font-bold text-slate-900 mt-10 mb-4 tracking-tight">
-                  {trimmed.replace('## ', '')}
+        <div className="prose prose-slate max-w-none text-slate-700 leading-relaxed text-base sm:text-lg">
+          <ReactMarkdown
+            components={{
+              h1: () => null, // Skip redundant H1 inside body since post.title is already displayed above
+              h2: ({ children }) => (
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-12 mb-4 tracking-tight">
+                  {children}
                 </h2>
-              );
-            }
-            if (trimmed.startsWith('> ')) {
-              return (
-                <blockquote key={i} className="border-l-4 border-blue-500 bg-blue-50/50 p-4 sm:p-6 rounded-r-2xl my-6 text-slate-800 italic font-serif text-lg">
-                  {trimmed.replace('> ', '').replace(/^"|"$/g, '')}
+              ),
+              h3: ({ children }) => (
+                <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mt-9 mb-3 tracking-tight">
+                  {children}
+                </h3>
+              ),
+              h4: ({ children }) => (
+                <h4 className="text-lg sm:text-xl font-bold text-slate-900 mt-6 mb-2 tracking-tight">
+                  {children}
+                </h4>
+              ),
+              p: ({ children }) => (
+                <p className="leading-relaxed mb-6 text-slate-700">
+                  {children}
+                </p>
+              ),
+              strong: ({ children }) => (
+                <strong className="font-bold text-slate-900">
+                  {children}
+                </strong>
+              ),
+              em: ({ children }) => (
+                <em className="italic text-slate-800">
+                  {children}
+                </em>
+              ),
+              blockquote: ({ children }) => (
+                <blockquote className="border-l-4 border-blue-500 bg-blue-50/60 p-4 sm:p-6 rounded-r-2xl my-6 text-slate-800 italic font-serif text-lg">
+                  {children}
                 </blockquote>
-              );
-            }
-            if (trimmed.startsWith('---')) {
-              return <hr key={i} className="my-10 border-slate-200" />;
-            }
-
-            return (
-              <p key={i} className="leading-relaxed">
-                {trimmed}
-              </p>
-            );
-          })}
+              ),
+              ul: ({ children }) => (
+                <ul className="list-disc list-outside pl-6 space-y-2 mb-6 text-slate-700">
+                  {children}
+                </ul>
+              ),
+              ol: ({ children }) => (
+                <ol className="list-decimal list-outside pl-6 space-y-2 mb-6 text-slate-700">
+                  {children}
+                </ol>
+              ),
+              li: ({ children }) => (
+                <li className="leading-relaxed">
+                  {children}
+                </li>
+              ),
+              hr: () => (
+                <hr className="my-10 border-slate-200" />
+              ),
+              a: ({ href, children }) => (
+                <a 
+                  href={href} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-blue-600 underline font-medium hover:text-blue-700 transition-colors"
+                >
+                  {children}
+                </a>
+              ),
+              img: ({ src, alt }) => (
+                <figure className="my-8 rounded-2xl overflow-hidden shadow-md bg-slate-50 border border-slate-200">
+                  <img 
+                    src={src} 
+                    alt={alt || post.title} 
+                    className="w-full h-auto object-cover max-h-[500px]" 
+                    loading="lazy"
+                  />
+                  {alt && (
+                    <figcaption className="p-3 text-xs text-center text-slate-500 italic bg-slate-50 border-t border-slate-100">
+                      {alt}
+                    </figcaption>
+                  )}
+                </figure>
+              ),
+              code: ({ children }) => (
+                <code className="px-1.5 py-0.5 rounded bg-slate-100 text-blue-600 font-mono text-sm">
+                  {children}
+                </code>
+              )
+            }}
+          >
+            {articleBody}
+          </ReactMarkdown>
         </div>
 
         {/* Mid-Article Call to Action */}
