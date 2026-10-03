@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Cache script promises to avoid multiple simultaneous injections
 const scriptLoadCache = new Map();
@@ -58,16 +58,32 @@ export default function VantaTopologyBackground({
 }) {
   const containerRef = useRef(null);
   const vantaEffectRef = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
+    let idleCallbackId = null;
+    let timeoutId = null;
+
+    // Respect accessibility motion preferences and data-saver connections
+    if (typeof window !== 'undefined') {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+      if (navigator.connection && (navigator.connection.saveData || navigator.connection.effectiveType === '2g')) {
+        return;
+      }
+    }
 
     async function initVanta() {
+      if (!isMounted || vantaEffectRef.current) return;
       try {
+        // 1. Ensure p5.js is dynamically loaded without blocking initial page layout/LCP
         if (!window.p5) {
           await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js');
         }
 
+        // Apply gentle frame rate cap to p5 setup so topology animation flows smoothly
         if (window.p5 && !window.p5._hasSlowedFramerate) {
           window.p5._hasSlowedFramerate = true;
           const originalSetup = window.p5.prototype.setup;
@@ -83,10 +99,12 @@ export default function VantaTopologyBackground({
           };
         }
 
+        // 2. Ensure Vanta Topology is loaded
         if (!window.VANTA || !window.VANTA.TOPOLOGY) {
           await loadExternalScript('https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js');
         }
 
+        // 3. Initialize Vanta Topology
         if (isMounted && containerRef.current && window.VANTA?.TOPOLOGY) {
           if (vantaEffectRef.current && typeof vantaEffectRef.current.destroy === 'function') {
             try {
@@ -107,6 +125,11 @@ export default function VantaTopologyBackground({
             backgroundColor
           });
 
+          if (isMounted) {
+            setIsLoaded(true);
+          }
+
+          // Ensure active p5 instance receives the slower frame rate
           const applyFrameRate = () => {
             if (vantaEffectRef.current?.p5 && typeof vantaEffectRef.current.p5.frameRate === 'function') {
               vantaEffectRef.current.p5.frameRate(targetFps);
@@ -130,10 +153,50 @@ export default function VantaTopologyBackground({
       }
     }
 
-    initVanta();
+    // Defer initialization until main thread is idle or on first user interaction
+    let triggered = false;
+    const triggerInit = () => {
+      if (triggered) return;
+      triggered = true;
+      cleanupListeners();
+      initVanta();
+    };
+
+    const cleanupListeners = () => {
+      window.removeEventListener('scroll', triggerInit);
+      window.removeEventListener('mousemove', triggerInit);
+      window.removeEventListener('touchstart', triggerInit);
+      window.removeEventListener('keydown', triggerInit);
+      if (idleCallbackId && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+
+    // User interactions that safely trigger canvas initialization
+    window.addEventListener('scroll', triggerInit, { once: true, passive: true });
+    window.addEventListener('mousemove', triggerInit, { once: true, passive: true });
+    window.addEventListener('touchstart', triggerInit, { once: true, passive: true });
+    window.addEventListener('keydown', triggerInit, { once: true, passive: true });
+
+    // Idle thread fallback: initialize only after initial layout and paints complete
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        idleCallbackId = window.requestIdleCallback(() => {
+          triggerInit();
+        }, { timeout: 3500 });
+      } else {
+        timeoutId = setTimeout(() => {
+          triggerInit();
+        }, 2500);
+      }
+    }
 
     return () => {
       isMounted = false;
+      cleanupListeners();
       if (vantaEffectRef.current && typeof vantaEffectRef.current.destroy === 'function') {
         try {
           vantaEffectRef.current.destroy();
@@ -153,7 +216,7 @@ export default function VantaTopologyBackground({
     >
       <div
         ref={containerRef}
-        className={`w-full h-full ${className}`}
+        className={`w-full h-full transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
         style={{
           width: '100%',
           height: '100%',
