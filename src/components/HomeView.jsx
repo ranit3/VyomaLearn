@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   ArrowRight, LogIn, Compass, Layers, Zap, BookOpen, 
   FileCheck2, RefreshCw, MessageSquare,
@@ -16,13 +16,42 @@ const DYNAMIC_WORDS = ["Learning,", "Studying,", "Planning,"];
 
 export default function HomeView() {
   const [wordIndex, setWordIndex] = useState(0);
+  const [currentText, setCurrentText] = useState(DYNAMIC_WORDS[0]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % DYNAMIC_WORDS.length);
-    }, 2800);
-    return () => clearInterval(timer);
-  }, []);
+    const currentWord = DYNAMIC_WORDS[wordIndex];
+    let timer;
+
+    if (!isDeleting) {
+      if (currentText.length < currentWord.length) {
+        // Type next character
+        timer = setTimeout(() => {
+          setCurrentText(currentWord.slice(0, currentText.length + 1));
+        }, 85);
+      } else {
+        // Full word finished, hold for reading
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 1800);
+      }
+    } else {
+      if (currentText.length > 0) {
+        // Delete character by character
+        timer = setTimeout(() => {
+          setCurrentText(currentWord.slice(0, currentText.length - 1));
+        }, 42);
+      } else {
+        // Word cleared, pause briefly before next word begins typing
+        timer = setTimeout(() => {
+          setIsDeleting(false);
+          setWordIndex((prev) => (prev + 1) % DYNAMIC_WORDS.length);
+        }, 240);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [currentText, isDeleting, wordIndex]);
   const steps = [
     {
       step: "01",
@@ -96,24 +125,24 @@ export default function HomeView() {
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-6 leading-[1.24] text-slate-950"
         >
           Agentic AI Based{' '}
-          <motion.span 
-            layout
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="relative inline-flex items-center justify-center bg-slate-950 text-white px-3.5 sm:px-4.5 py-0.5 sm:py-1 rounded-md font-serif italic font-normal shadow-[0_4px_20px_-2px_rgba(15,23,42,0.3),0_0_15px_rgba(56,189,248,0.15)] border border-slate-800/90 overflow-hidden align-baseline select-none before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"
+          <span 
+            className="relative inline-flex items-center justify-start bg-slate-950 text-white px-3.5 sm:px-4.5 py-0.5 sm:py-1 rounded-md font-serif italic font-normal shadow-[0_4px_20px_-2px_rgba(15,23,42,0.3),0_0_15px_rgba(56,189,248,0.15)] border border-slate-800/90 overflow-hidden align-baseline select-none before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"
           >
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span
-                key={DYNAMIC_WORDS[wordIndex]}
-                initial={{ opacity: 0, y: 7, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -7, filter: 'blur(4px)' }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-block whitespace-nowrap"
-              >
-                {DYNAMIC_WORDS[wordIndex]}
-              </motion.span>
-            </AnimatePresence>
-          </motion.span>
+            {/* Invisible multi-word grid reservation guaranteeing rock-solid width without layout shift */}
+            <span className="invisible opacity-0 select-none pointer-events-none inline-grid grid-cols-1 grid-rows-1" aria-hidden="true">
+              <span className="col-start-1 row-start-1">Learning,</span>
+              <span className="col-start-1 row-start-1">Studying,</span>
+              <span className="col-start-1 row-start-1">Planning,</span>
+            </span>
+
+            {/* Typewriter text and glowing cyan cursor */}
+            <span className="absolute inset-0 flex items-center justify-start pl-3.5 sm:pl-4.5 pr-2">
+              <span className="inline-flex items-center whitespace-nowrap">
+                <span>{currentText}</span>
+                <span className="inline-block w-[2px] h-[0.85em] bg-cyan-400 ml-1 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.9)]" />
+              </span>
+            </span>
+          </span>
           <br className="hidden md:block" />
           <span className="font-serif italic text-slate-950 font-normal mt-3 block">
             Personalized From Basics to Mastery.
