@@ -16,7 +16,7 @@ const DYNAMIC_WORDS = ["Learning,", "Studying,", "Planning,"];
 
 export default function HomeView() {
   const [wordIndex, setWordIndex] = useState(0);
-  const [currentText, setCurrentText] = useState(DYNAMIC_WORDS[0]);
+  const [currentText, setCurrentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -25,10 +25,11 @@ export default function HomeView() {
 
     if (!isDeleting) {
       if (currentText.length < currentWord.length) {
-        // Type next character
+        // Type next character (slight natural pause on 1st character when word begins)
+        const delay = currentText.length === 0 ? 250 : 85;
         timer = setTimeout(() => {
           setCurrentText(currentWord.slice(0, currentText.length + 1));
-        }, 85);
+        }, delay);
       } else {
         // Full word finished, hold for reading
         timer = setTimeout(() => {
