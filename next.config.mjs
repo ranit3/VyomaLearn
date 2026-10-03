@@ -4,6 +4,7 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
   experimental: {
+    optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
   async redirects() {

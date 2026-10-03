@@ -78,6 +78,46 @@ export const metadata = {
   manifest: '/site.webmanifest',
 };
 
+const criticalCss = `
+  html, body {
+    background-color: #edf4fa;
+    color: #0f172a;
+    font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  header {
+    position: relative;
+    width: 100%;
+    z-index: 50;
+  }
+  .font-brand {
+    font-family: var(--font-playfair), 'Playfair Display', Georgia, serif !important;
+  }
+  /* Critical Above-The-Fold Styles for Instant First Contentful Paint (FCP) */
+  .critical-nav {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .critical-hero {
+    max-width: 64rem;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding-top: 2rem;
+    padding-bottom: 3.5rem;
+  }
+`;
+
 export default function RootLayout({ children }) {
   const orgSchema = {
     "@context": "https://schema.org",
@@ -126,6 +166,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${jakarta.variable} h-full scroll-smooth`}>
       <head>
+        <style
+          id="critical-above-the-fold"
+          dangerouslySetInnerHTML={{ __html: criticalCss }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
