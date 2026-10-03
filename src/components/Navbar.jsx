@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 import { PLATFORM_URL, NAV_LINKS } from '@/lib/constants';
 
@@ -49,20 +49,12 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Action Button & Mobile Menu Toggle */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <a
-            href={`${PLATFORM_URL}/login`}
-            className="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-          >
-            <span>Get Started</span>
-            <ArrowRight size={14} className="hidden sm:inline" />
-          </a>
-
+        {/* Mobile Menu Toggle */}
+        <div className="flex items-center md:hidden shrink-0">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-800 hover:bg-white/60 rounded-xl transition-colors shrink-0"
+            className="p-2 text-slate-800 hover:bg-white/60 rounded-xl transition-colors shrink-0 cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -90,13 +82,6 @@ export default function Navbar() {
               </Link>
             );
           })}
-          <a
-            href={`${PLATFORM_URL}/login`}
-            onClick={() => setMobileMenuOpen(false)}
-            className="mt-2 w-full py-2.5 bg-slate-950 hover:bg-slate-800 text-white text-center text-sm font-semibold rounded-xl transition-colors"
-          >
-            Sign In to Platform
-          </a>
         </div>
       )}
     </header>
