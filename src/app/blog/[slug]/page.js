@@ -105,7 +105,12 @@ export default async function BlogPostPage({ params }) {
     }
   };
 
-  const articleBody = post.content || '';
+  // Sanitize content: strip any HTML comments (placeholders), clean LaTeX math, and normalize typography
+  const articleBody = (post.content || '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\$\int\s*\int_?R?\s*f\(x,y\)\s*dA\$/g, '∬_R f(x,y) dA')
+    .replace(/\$([^$]+)\$/g, '$1')
+    .replace(/([^\s])—([^\s])/g, '$1 — $2');
 
   return (
     <div className="flex flex-col min-h-screen">
