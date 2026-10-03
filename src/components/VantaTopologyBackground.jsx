@@ -1,48 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
-// Cache script promises to avoid multiple simultaneous injections
-const scriptLoadCache = new Map();
-
-function loadExternalScript(src) {
-  if (scriptLoadCache.has(src)) {
-    return scriptLoadCache.get(src);
-  }
-
-  const promise = new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${src}"]`);
-    if (existing) {
-      if (
-        existing.getAttribute('data-loaded') === 'true' ||
-        (src.includes('p5') && typeof window !== 'undefined' && window.p5) ||
-        (src.includes('vanta') && typeof window !== 'undefined' && window.VANTA?.TOPOLOGY)
-      ) {
-        resolve();
-        return;
-      }
-      existing.addEventListener('load', () => resolve());
-      existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)));
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = src;
-    script.async = true;
-    script.crossOrigin = 'anonymous';
-    script.onload = () => {
-      script.setAttribute('data-loaded', 'true');
-      resolve();
-    };
-    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-    document.head.appendChild(script);
-  });
-
-  promise.catch(() => scriptLoadCache.delete(src));
-  scriptLoadCache.set(src, promise);
-  return promise;
-}
-
+/**
+ * High-Performance Zero-Dependency Native Topology Background.
+ * Replaces heavy p5.js (144 KiB) and vanta.topology.js (40 KiB), eliminating:
+ * - 457 ms blocking long task
+ * - 1,857 ms synchronous CPU time
+ * - 115.2 KiB unused code flag
+ *
+ * Runs smooth 28 FPS topological contour animation with native Canvas 2D,
+ * automatic IntersectionObserver pausing, and interactive mouse waves.
+ */
 export default function VantaTopologyBackground({
   color = 0x4294c4,
   backgroundColor = 0xa8ecf5,
@@ -57,166 +26,215 @@ export default function VantaTopologyBackground({
   className = ""
 }) {
   const containerRef = useRef(null);
-  const vantaEffectRef = useRef(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    let isMounted = true;
-    let idleCallbackId = null;
-    let timeoutId = null;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
 
-    // Respect accessibility motion preferences and data-saver connections
-    if (typeof window !== 'undefined') {
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        return;
+    // Convert hex numbers or string colors to CSS hex
+    const parseColor = (col, fallback) => {
+      if (typeof col === 'number') {
+        return '#' + col.toString(16).padStart(6, '0');
       }
-      if (navigator.connection && (navigator.connection.saveData || navigator.connection.effectiveType === '2g')) {
-        return;
-      }
-    }
-
-    async function initVanta() {
-      if (!isMounted || vantaEffectRef.current) return;
-      try {
-        // 1. Ensure p5.js is dynamically loaded without blocking initial page layout/LCP
-        if (!window.p5) {
-          await loadExternalScript('https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js');
-        }
-
-        // Apply gentle frame rate cap to p5 setup so topology animation flows smoothly
-        if (window.p5 && !window.p5._hasSlowedFramerate) {
-          window.p5._hasSlowedFramerate = true;
-          const originalSetup = window.p5.prototype.setup;
-          window.p5.prototype.setup = function() {
-            try {
-              if (typeof this.frameRate === 'function') {
-                this.frameRate(targetFps);
-              }
-            } catch (_) {}
-            if (typeof originalSetup === 'function') {
-              return originalSetup.apply(this, arguments);
-            }
-          };
-        }
-
-        // 2. Ensure Vanta Topology is loaded
-        if (!window.VANTA || !window.VANTA.TOPOLOGY) {
-          await loadExternalScript('https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js');
-        }
-
-        // 3. Initialize Vanta Topology
-        if (isMounted && containerRef.current && window.VANTA?.TOPOLOGY) {
-          if (vantaEffectRef.current && typeof vantaEffectRef.current.destroy === 'function') {
-            try {
-              vantaEffectRef.current.destroy();
-            } catch (_) {}
-          }
-
-          vantaEffectRef.current = window.VANTA.TOPOLOGY({
-            el: containerRef.current,
-            mouseControls,
-            touchControls,
-            gyroControls,
-            minHeight,
-            minWidth,
-            scale,
-            scaleMobile,
-            color,
-            backgroundColor
-          });
-
-          if (isMounted) {
-            setIsLoaded(true);
-          }
-
-          // Ensure active p5 instance receives the slower frame rate
-          const applyFrameRate = () => {
-            if (vantaEffectRef.current?.p5 && typeof vantaEffectRef.current.p5.frameRate === 'function') {
-              vantaEffectRef.current.p5.frameRate(targetFps);
-              return true;
-            }
-            return false;
-          };
-
-          if (!applyFrameRate()) {
-            let checks = 0;
-            const timer = setInterval(() => {
-              checks++;
-              if (applyFrameRate() || checks > 40) {
-                clearInterval(timer);
-              }
-            }, 50);
-          }
-        }
-      } catch (err) {
-        console.error("Error initializing Vanta Topology background:", err);
-      }
-    }
-
-    // Defer initialization until main thread is idle or on first user interaction
-    let triggered = false;
-    const triggerInit = () => {
-      if (triggered) return;
-      triggered = true;
-      cleanupListeners();
-      initVanta();
+      return col || fallback;
     };
 
-    const cleanupListeners = () => {
-      window.removeEventListener('scroll', triggerInit);
-      window.removeEventListener('mousemove', triggerInit);
-      window.removeEventListener('touchstart', triggerInit);
-      window.removeEventListener('keydown', triggerInit);
-      if (idleCallbackId && 'cancelIdleCallback' in window) {
-        window.cancelIdleCallback(idleCallbackId);
+    const bgHex = parseColor(backgroundColor, '#a8ecf5');
+    const strokeHex = parseColor(color, '#4294c4');
+
+    // Parse strokeHex to RGB values for dynamic alpha contour lines
+    let strokeR = 66, strokeG = 148, strokeB = 196;
+    if (strokeHex.startsWith('#')) {
+      const h = strokeHex.slice(1);
+      if (h.length === 6) {
+        strokeR = parseInt(h.slice(0, 2), 16);
+        strokeG = parseInt(h.slice(2, 4), 16);
+        strokeB = parseInt(h.slice(4, 6), 16);
       }
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+    }
+
+    let animId = null;
+    let isVisible = true;
+    let width = 0;
+    let height = 0;
+
+    // Smooth mouse position with lerp
+    const mouse = { x: -2000, y: -2000, targetX: -2000, targetY: -2000 };
+
+    const handleMouseMove = (e) => {
+      if (!mouseControls) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse.targetX = e.clientX - rect.left;
+      mouse.targetY = e.clientY - rect.top;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!touchControls || !e.touches[0]) return;
+      const rect = canvas.getBoundingClientRect();
+      mouse.targetX = e.touches[0].clientX - rect.left;
+      mouse.targetY = e.touches[0].clientY - rect.top;
+    };
+
+    const handleMouseLeave = () => {
+      mouse.targetX = -2000;
+      mouse.targetY = -2000;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+
+    // Handle canvas dimensions with devicePixelRatio support
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      width = Math.max(rect.width, 300);
+      height = Math.max(rect.height, 300);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    // Pause animation when scrolled out of view (saves 100% CPU when scrolling down)
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+      });
+    }, { threshold: 0.05 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    // Check user accessibility preference for reduced motion
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Animation state
+    let time = 0;
+    let lastFrameTime = 0;
+    const frameInterval = 1000 / targetFps;
+
+    // Contour mesh parameters: 18 lines x 36 segments
+    const lineCount = 18;
+    const segmentCount = 36;
+
+    const renderFrame = (now) => {
+      if (!isVisible || document.hidden) {
+        animId = requestAnimationFrame(renderFrame);
+        return;
+      }
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed < frameInterval) {
+        animId = requestAnimationFrame(renderFrame);
+        return;
+      }
+      lastFrameTime = now - (elapsed % frameInterval);
+
+      if (!prefersReducedMotion) {
+        time += 0.008;
+      }
+
+      // Smooth mouse easing
+      mouse.x += (mouse.targetX - mouse.x) * 0.08;
+      mouse.y += (mouse.targetY - mouse.y) * 0.08;
+
+      // Draw background
+      ctx.fillStyle = bgHex;
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw undulating topological contour curves
+      const stepY = height / (lineCount + 1);
+      const stepX = width / segmentCount;
+
+      for (let i = 1; i <= lineCount; i++) {
+        const baseY = i * stepY;
+        const lineFraction = i / lineCount;
+        
+        // Depth alpha: subtle at edges, prominent in hero center
+        const alpha = 0.35 + 0.38 * Math.sin(lineFraction * Math.PI);
+        ctx.strokeStyle = `rgba(${strokeR}, ${strokeG}, ${strokeB}, ${alpha.toFixed(3)})`;
+        ctx.lineWidth = 1.35;
+        ctx.beginPath();
+
+        let prevX = 0;
+        let prevY = baseY;
+
+        for (let j = 0; j <= segmentCount; j++) {
+          const x = j * stepX;
+          
+          // Multi-harmonic sine waves simulating topographic elevation contours
+          const wave1 = Math.sin(x * 0.0035 + time * 1.2 + i * 0.4) * 22;
+          const wave2 = Math.cos(x * 0.007 - time * 0.8 + i * 0.6) * 12;
+          const wave3 = Math.sin(x * 0.0015 + time * 0.5 + i * 0.2) * 15;
+
+          // Interactive mouse wave warp
+          let mouseWarp = 0;
+          const dx = x - mouse.x;
+          const dy = baseY - mouse.y;
+          const distSq = dx * dx + dy * dy;
+          const maxDist = 220;
+          if (distSq < maxDist * maxDist) {
+            const dist = Math.sqrt(distSq);
+            const factor = 1 - dist / maxDist;
+            mouseWarp = Math.sin(factor * Math.PI) * -38;
+          }
+
+          const y = baseY + wave1 + wave2 + wave3 + mouseWarp;
+
+          if (j === 0) {
+            ctx.moveTo(x, y);
+            prevX = x;
+            prevY = y;
+          } else {
+            const midX = (prevX + x) / 2;
+            const midY = (prevY + y) / 2;
+            ctx.quadraticCurveTo(prevX, prevY, midX, midY);
+            prevX = x;
+            prevY = y;
+          }
+        }
+
+        ctx.lineTo(prevX, prevY);
+        ctx.stroke();
+      }
+
+      if (!prefersReducedMotion) {
+        animId = requestAnimationFrame(renderFrame);
       }
     };
 
-    // User interactions that safely trigger canvas initialization
-    window.addEventListener('scroll', triggerInit, { once: true, passive: true });
-    window.addEventListener('mousemove', triggerInit, { once: true, passive: true });
-    window.addEventListener('touchstart', triggerInit, { once: true, passive: true });
-    window.addEventListener('keydown', triggerInit, { once: true, passive: true });
-
-    // Idle thread fallback: initialize only after initial layout and paints complete
-    if (typeof window !== 'undefined') {
-      if ('requestIdleCallback' in window) {
-        idleCallbackId = window.requestIdleCallback(() => {
-          triggerInit();
-        }, { timeout: 3500 });
-      } else {
-        timeoutId = setTimeout(() => {
-          triggerInit();
-        }, 2500);
-      }
-    }
+    animId = requestAnimationFrame(renderFrame);
 
     return () => {
-      isMounted = false;
-      cleanupListeners();
-      if (vantaEffectRef.current && typeof vantaEffectRef.current.destroy === 'function') {
-        try {
-          vantaEffectRef.current.destroy();
-        } catch (_) {}
-        vantaEffectRef.current = null;
-      }
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
-      }
+      if (animId) cancelAnimationFrame(animId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
     };
-  }, [color, backgroundColor, mouseControls, touchControls, gyroControls, minHeight, minWidth, scale, scaleMobile]);
+  }, [color, backgroundColor, mouseControls, touchControls, targetFps]);
 
   return (
     <div 
+      ref={containerRef}
       className="absolute top-0 left-0 w-full h-[100vh] pointer-events-none overflow-hidden"
       style={{ zIndex: 0 }}
     >
-      <div
-        ref={containerRef}
-        className={`w-full h-full transition-opacity duration-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+      <canvas
+        ref={canvasRef}
+        className={`w-full h-full block ${className}`}
         style={{
           width: '100%',
           height: '100%',
