@@ -98,16 +98,16 @@ export default function HomeView() {
           Agentic AI Based{' '}
           <motion.span 
             layout
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="relative inline-flex items-center justify-center bg-slate-950 text-white px-3 sm:px-4 py-0.5 sm:py-1 rounded-md font-serif italic font-normal shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-slate-800/80 overflow-hidden align-baseline select-none"
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="relative inline-flex items-center justify-center bg-slate-950 text-white px-3.5 sm:px-4.5 py-0.5 sm:py-1 rounded-md font-serif italic font-normal shadow-[0_4px_20px_-2px_rgba(15,23,42,0.3),0_0_15px_rgba(56,189,248,0.15)] border border-slate-800/90 overflow-hidden align-baseline select-none before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/30 before:to-transparent"
           >
-            <AnimatePresence mode="wait" initial={false}>
+            <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={DYNAMIC_WORDS[wordIndex]}
-                initial={{ y: 22, opacity: 0, filter: 'blur(3px)' }}
-                animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                exit={{ y: -22, opacity: 0, filter: 'blur(3px)' }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 7, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -7, filter: 'blur(4px)' }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 className="inline-block whitespace-nowrap"
               >
                 {DYNAMIC_WORDS[wordIndex]}
