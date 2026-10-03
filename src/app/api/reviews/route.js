@@ -78,27 +78,20 @@ const DEFAULT_REVIEWS = [
 ];
 
 export async function GET() {
-  const backendBaseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-  
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const { getSupabase } = await import('@/lib/supabase');
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('active', true)
+      .order('created_at', { ascending: false });
 
-    const res = await fetch(`${backendBaseUrl.replace(/\/+$/, '')}/api/reviews`, {
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' },
-      cache: 'no-store'
-    });
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return NextResponse.json(data);
-      }
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return NextResponse.json(data);
     }
-  } catch (_) {
-    // If backend is unreachable or local development, fall through to default reviews
+  } catch (err) {
+    console.error('Notice: Supabase direct reviews error:', err);
   }
 
   return NextResponse.json(DEFAULT_REVIEWS);

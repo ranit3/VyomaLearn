@@ -177,31 +177,64 @@ export function getStaticBlogs() {
   return DEFAULT_BLOGS;
 }
 
+export function formatSupabaseBlog(item) {
+  if (!item) return null;
+  return {
+    id: item.id || item.slug,
+    slug: item.slug || item.id,
+    title: item.title,
+    excerpt: item.excerpt,
+    content: item.content,
+    author: item.author || 'VyomaLearn Editorial',
+    category: item.category || 'AI & Education',
+    date: item.date || (item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : 'Sep 2026'),
+    imageUrl: item.image_url || item.imageUrl || '',
+    readTime: item.read_time || item.readTime || '5 min read',
+    active: item.active !== undefined ? item.active : true,
+    seoTitle: item.seo_title || item.seoTitle || (item.title + ' | Vyoma Learn'),
+    seoDescription: item.seo_description || item.seoDescription || item.excerpt,
+    rawMetaTags: item.raw_meta_tags || item.rawMetaTags || '',
+    keywords: item.keywords || '',
+    created_at: item.created_at,
+    updated_at: item.updated_at
+  };
+}
+
 /**
- * Fetch all published blogs dynamically from backend/database, falling back to static blogs.
+ * Fetch all published blogs dynamically from Supabase, falling back to static blogs.
  */
 export async function getAllBlogs() {
-  const backendBaseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const { getSupabase } = await import('@/lib/supabase');
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .eq('active', true)
+      .order('created_at', { ascending: false });
 
-    const res = await fetch(`${backendBaseUrl.replace(/\/+$/, '')}/api/blogs`, {
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' },
-      next: { revalidate: 60 } // Next.js Incremental Static Regeneration cache for high performance & fresh SEO
-    });
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data;
-      }
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return data.map(formatSupabaseBlog);
     }
-  } catch (_) {
-    // If backend is unreachable or local development, fall through to default blogs
+  } catch (err) {
+    console.error('Notice: Supabase direct fetch error in getAllBlogs:', err);
+  }
+
+  // Fallback to backend API if configured
+  const backendBaseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
+  if (backendBaseUrl) {
+    try {
+      const res = await fetch(backendBaseUrl.replace(/\/+$/, '') + '/api/blogs', {
+        headers: { 'Accept': 'application/json' },
+        next: { revalidate: 60 }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return data;
+        }
+      }
+    } catch (_) {}
   }
 
   return DEFAULT_BLOGS;
@@ -211,26 +244,42 @@ export async function getAllBlogs() {
  * Fetch single published blog by slug or ID.
  */
 export async function getBlogBySlug(slug) {
-  const backendBaseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  if (!slug) return null;
+  const decoded = decodeURIComponent(slug);
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const { getSupabase } = await import('@/lib/supabase');
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('*')
+      .or('slug.eq.' + decoded + ',id.eq.' + decoded)
+      .eq('active', true)
+      .maybeSingle();
 
-    const res = await fetch(`${backendBaseUrl.replace(/\/+$/, '')}/api/blogs/${encodeURIComponent(slug)}`, {
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' },
-      next: { revalidate: 60 }
-    });
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data && !data.error) {
-        return data;
-      }
+    if (!error && data) {
+      return formatSupabaseBlog(data);
     }
-  } catch (_) {}
+  } catch (err) {
+    console.error('Notice: Supabase direct fetch error in getBlogBySlug:', err);
+  }
 
-  return DEFAULT_BLOGS.find((b) => b.slug === slug || b.id === slug) || null;
+  // Fallback to backend API if configured
+  const backendBaseUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
+  if (backendBaseUrl) {
+    try {
+      const res = await fetch(backendBaseUrl.replace(/\/+$/, '') + '/api/blogs/' + encodeURIComponent(decoded), {
+        headers: { 'Accept': 'application/json' },
+        next: { revalidate: 60 }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && !data.error) {
+          return data;
+        }
+      }
+    } catch (_) {}
+  }
+
+  return DEFAULT_BLOGS.find((b) => b.slug === decoded || b.id === decoded) || null;
 }
