@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, LogIn, Compass, Layers, Zap, BookOpen, 
   FileCheck2, RefreshCw, MessageSquare,
@@ -12,7 +12,17 @@ import ReviewsGallery from './ReviewsGallery';
 import HomeBlogSection from './HomeBlogSection';
 import HomeFAQSection from './HomeFAQSection';
 
+const DYNAMIC_WORDS = ["Learning,", "Studying,", "Discovering,"];
+
 export default function HomeView() {
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % DYNAMIC_WORDS.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
   const steps = [
     {
       step: "01",
@@ -83,9 +93,27 @@ export default function HomeView() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-6 leading-[1.22] text-slate-950"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight mb-6 leading-[1.24] text-slate-950"
         >
-          Agentic AI Based <span className="inline-block bg-slate-950 text-white px-4 py-1 rounded-md font-serif italic font-normal shadow-sm">Learning,</span>
+          Agentic AI Based{' '}
+          <motion.span 
+            layout
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="relative inline-flex items-center justify-center bg-slate-950 text-white px-3 sm:px-4 py-0.5 sm:py-1 rounded-md font-serif italic font-normal shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-slate-800/80 overflow-hidden align-baseline select-none"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={DYNAMIC_WORDS[wordIndex]}
+                initial={{ y: 22, opacity: 0, filter: 'blur(3px)' }}
+                animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                exit={{ y: -22, opacity: 0, filter: 'blur(3px)' }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-block whitespace-nowrap"
+              >
+                {DYNAMIC_WORDS[wordIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </motion.span>
           <br className="hidden md:block" />
           <span className="font-serif italic text-slate-950 font-normal mt-3 block">
             Personalized From Basics to Mastery.
