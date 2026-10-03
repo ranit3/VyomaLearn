@@ -86,6 +86,7 @@ export default function ReviewsGallery() {
   const [reviews, setReviews] = useState(INITIAL_REVIEWS);
   const [mutedStates, setMutedStates] = useState({});
   const [isPlayingStates, setIsPlayingStates] = useState({});
+  const [hasStartedStates, setHasStartedStates] = useState({});
   const [modalVideo, setModalVideo] = useState(null);
   const videoRefs = useRef({});
 
@@ -190,10 +191,30 @@ export default function ReviewsGallery() {
 
   const togglePlay = (uniqueKey, e) => {
     e.stopPropagation();
+    
+    // If not started yet, mount and trigger play
+    if (!hasStartedStates[uniqueKey]) {
+      // Pause any other playing video
+      Object.keys(videoRefs.current).forEach(k => {
+        if (k !== uniqueKey && videoRefs.current[k]) {
+          videoRefs.current[k].pause();
+        }
+      });
+      setIsPlayingStates({});
+      setHasStartedStates(prev => ({ ...prev, [uniqueKey]: true }));
+      setIsPlayingStates(prev => ({ ...prev, [uniqueKey]: true }));
+      return;
+    }
+
     const vidEl = videoRefs.current[uniqueKey];
     if (!vidEl) return;
 
     if (vidEl.paused) {
+      Object.keys(videoRefs.current).forEach(k => {
+        if (k !== uniqueKey && videoRefs.current[k]) {
+          videoRefs.current[k].pause();
+        }
+      });
       vidEl.play().catch(() => {});
       setIsPlayingStates(prev => ({ ...prev, [uniqueKey]: true }));
     } else {
@@ -267,7 +288,9 @@ export default function ReviewsGallery() {
           const isVideo = review.type === 'video' && review.videoUrl;
           const uniqueKey = `${review.id}-${idx}`;
           const isMuted = mutedStates[uniqueKey] !== false;
-          const isPlaying = isPlayingStates[uniqueKey] !== false;
+          const hasStarted = !!hasStartedStates[uniqueKey];
+          const isPlaying = isPlayingStates[uniqueKey] === true;
+          const posterUrl = review.posterUrl || review.avatar;
 
           return (
             <article
@@ -283,6 +306,7 @@ export default function ReviewsGallery() {
                       alt={review.name}
                       className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0 bg-slate-100"
                       loading="lazy"
+                      decoding="async"
                     />
                     <div className="min-w-0">
                       <h3 className="font-bold text-slate-950 text-sm sm:text-base leading-tight truncate">
@@ -315,63 +339,109 @@ export default function ReviewsGallery() {
                   ))}
                 </div>
 
-                {/* Body: Video Review (Autoplaying Video, NO written text) vs Written Review */}
+                {/* Body: Video Review (Lazy-loaded on user click, ZERO preloading on page load) vs Written Review */}
                 {isVideo ? (
                   <div className="mt-2">
                     <div 
                       onClick={(e) => togglePlay(uniqueKey, e)}
                       className="aspect-[16/10] w-full rounded-2xl overflow-hidden bg-slate-950 relative group/video shadow-md border border-slate-800 cursor-pointer"
                     >
-                      <video
-                        ref={el => { videoRefs.current[uniqueKey] = el; }}
-                        src={review.videoUrl}
-                        autoPlay
-                        muted={isMuted}
-                        defaultMuted
-                        loop
-                        playsInline
-                        webkit-playsinline="true"
-                        preload="metadata"
-                        className="w-full h-full object-cover"
-                        onPlay={() => setIsPlayingStates(p => ({ ...p, [uniqueKey]: true }))}
-                        onPause={() => setIsPlayingStates(p => ({ ...p, [uniqueKey]: false }))}
-                      />
+                      {hasStarted ? (
+                        <>
+                          <video
+                            ref={el => { videoRefs.current[uniqueKey] = el; }}
+                            src={review.videoUrl}
+                            poster={posterUrl}
+                            autoPlay
+                            muted={isMuted}
+                            loop
+                            playsInline
+                            webkit-playsinline="true"
+                            preload="metadata"
+                            className="w-full h-full object-cover"
+                            onPlay={() => setIsPlayingStates(p => ({ ...p, [uniqueKey]: true }))}
+                            onPause={() => setIsPlayingStates(p => ({ ...p, [uniqueKey]: false }))}
+                          />
 
-                      {/* Floating Video Overlay Controls */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-95 transition-opacity flex items-end justify-between p-3">
-                        <div className="flex items-center gap-2">
-                          {/* Play/Pause Button */}
-                          <button
-                            type="button"
-                            onClick={(e) => togglePlay(uniqueKey, e)}
-                            className="w-8 h-8 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform hover:scale-110 cursor-pointer shadow-sm"
-                            title={isPlaying ? 'Pause Video' : 'Play Video'}
-                          >
-                            {isPlaying ? <Pause size={13} /> : <Play size={13} className="ml-0.5 fill-white" />}
-                          </button>
+                          {/* Floating Video Overlay Controls */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent opacity-95 transition-opacity flex items-end justify-between p-3 pointer-events-auto">
+                            <div className="flex items-center gap-2">
+                              {/* Play/Pause Button */}
+                              <button
+                                type="button"
+                                onClick={(e) => togglePlay(uniqueKey, e)}
+                                className="w-8 h-8 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform hover:scale-110 cursor-pointer shadow-sm"
+                                title={isPlaying ? 'Pause Video' : 'Play Video'}
+                              >
+                                {isPlaying ? <Pause size={13} /> : <Play size={13} className="ml-0.5 fill-white" />}
+                              </button>
 
-                          {/* Sound Mute/Unmute */}
-                          <button
-                            type="button"
-                            onClick={(e) => toggleMute(uniqueKey, e)}
-                            className="w-8 h-8 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform hover:scale-110 cursor-pointer shadow-sm"
-                            title={isMuted ? 'Unmute Video' : 'Mute Video'}
-                          >
-                            {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} className="text-emerald-400" />}
-                          </button>
+                              {/* Sound Mute/Unmute */}
+                              <button
+                                type="button"
+                                onClick={(e) => toggleMute(uniqueKey, e)}
+                                className="w-8 h-8 rounded-full bg-black/75 hover:bg-black text-white flex items-center justify-center backdrop-blur-xs transition-transform hover:scale-110 cursor-pointer shadow-sm"
+                                title={isMuted ? 'Unmute Video' : 'Mute Video'}
+                              >
+                                {isMuted ? <VolumeX size={13} /> : <Volume2 size={13} className="text-emerald-400" />}
+                              </button>
+                            </div>
+
+                            {/* Fullscreen Expand */}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setModalVideo(review); }}
+                              className="px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/40 text-white text-[11px] font-medium flex items-center gap-1 backdrop-blur-xs transition-colors cursor-pointer"
+                              title="Expand video"
+                            >
+                              <Maximize2 size={11} />
+                              <span>Expand</span>
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        /* Poster Thumbnail with Centered Play Button - 0 KB MP4 downloaded on page load */
+                        <div className="w-full h-full relative">
+                          <img
+                            src={posterUrl}
+                            alt={`${review.name} video review`}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover/video:scale-105 transition-transform duration-500 brightness-90"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/25" />
+
+                          {/* Centered Glowing Play Button */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white/95 text-slate-950 flex items-center justify-center shadow-xl group-hover/video:scale-110 group-hover/video:bg-white transition-all duration-300">
+                              <Play size={20} className="ml-1 fill-slate-950 text-slate-950" />
+                            </div>
+                          </div>
+
+                          {/* Bottom Info Bar */}
+                          <div className="absolute inset-x-0 bottom-0 p-3 flex items-center justify-between">
+                            <span className="text-[11px] text-white/90 font-semibold tracking-wide flex items-center gap-1.5 drop-shadow-sm">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                              <span>Click to play</span>
+                            </span>
+
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); setModalVideo(review); }}
+                                className="px-2 py-0.5 rounded-full bg-white/20 hover:bg-white/40 text-white text-[10px] font-medium flex items-center gap-1 backdrop-blur-xs transition-colors cursor-pointer"
+                                title="Expand video"
+                              >
+                                <Maximize2 size={10} />
+                                <span>Expand</span>
+                              </button>
+                              <span className="px-2 py-0.5 rounded-full bg-black/60 text-white text-[10px] font-mono font-bold backdrop-blur-xs border border-white/10">
+                                {review.videoDuration || 'Video'}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-
-                        {/* Fullscreen Expand */}
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); setModalVideo(review); }}
-                          className="px-2.5 py-1 rounded-full bg-white/20 hover:bg-white/40 text-white text-[11px] font-medium flex items-center gap-1 backdrop-blur-xs transition-colors cursor-pointer"
-                          title="Expand video"
-                        >
-                          <Maximize2 size={11} />
-                          <span>Expand</span>
-                        </button>
-                      </div>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -426,6 +496,7 @@ export default function ReviewsGallery() {
                 autoPlay
                 controls
                 playsInline
+                preload="auto"
                 className="w-full h-full object-contain"
               />
             </div>
