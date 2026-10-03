@@ -126,7 +126,7 @@ export default function HomeView() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-lg sm:text-xl text-slate-700 max-w-2xl mb-10 font-normal leading-relaxed"
         >
-          Vyoma Learn (VyomaLearn) analyzes your learning patterns to deliver personalized practice sessions, adapting dynamically to your pace and ensuring profound comprehension without the stress.
+          Vyoma Learn analyzes your learning patterns to deliver personalized practice sessions, adapting dynamically to your pace and ensuring profound comprehension without the stress.
         </motion.p>
         
         <motion.div 

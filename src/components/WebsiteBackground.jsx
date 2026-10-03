@@ -67,8 +67,8 @@ export default function WebsiteBackground() {
       {/* On homepage only: animated Vanta Topology background in the first instance (first 100vh) */}
       {isHomePage && (
         <VantaTopologyBackground 
-          color={0x237bb1}
-          backgroundColor={0x4ce8e8}
+          color={0x4294c4}
+          backgroundColor={0xa8ecf5}
           mouseControls={true}
           touchControls={true}
           gyroControls={false}

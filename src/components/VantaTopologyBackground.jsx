@@ -44,8 +44,8 @@ function loadExternalScript(src) {
 }
 
 export default function VantaTopologyBackground({
-  color = 0x237bb1,
-  backgroundColor = 0x4ce8e8,
+  color = 0x4294c4,
+  backgroundColor = 0xa8ecf5,
   mouseControls = true,
   touchControls = true,
   gyroControls = false,

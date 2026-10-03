@@ -3,8 +3,8 @@ import { BookOpen, FileCheck2, Users2, Languages, Palette, LayoutTemplate, Code2
 import { DEVELOPERS } from '@/lib/constants';
 
 export const metadata = {
-  title: 'About Us — Meet the Creators & Mission | Vyoma Learn (VyomaLearn)',
-  description: 'Meet the creators behind Vyoma Learn (VyomaLearn) — Ranit Purkait and Saddam Hussain. Explore our mission to build an Agentic AI personalized learning platform.',
+  title: 'About Us — Meet the Creators & Mission | Vyoma Learn',
+  description: 'Meet the creators behind Vyoma Learn — Ranit Purkait and Saddam Hussain. Explore our mission to build an Agentic AI personalized learning platform.',
   keywords: [
     'Ranit Purkait',
     'Ranit Purkait Vyoma Learn',
@@ -64,7 +64,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     "name": "About Vyoma Learn — Creators & Mission",
-    "description": "Meet the creators behind Vyoma Learn (VyomaLearn) — Ranit Purkait and Saddam Hussain. Explore our mission to build an Agentic AI personalized learning platform.",
+    "description": "Meet the creators behind Vyoma Learn — Ranit Purkait and Saddam Hussain. Explore our mission to build an Agentic AI personalized learning platform.",
     "url": "https://vyomalearn.in/about",
     "mainEntity": {
       "@type": "EducationalOrganization",

@@ -23,7 +23,7 @@ export const metadata = {
     template: '%s | Vyoma Learn (VyomaLearn)',
   },
   description:
-    'Vyoma Learn (VyomaLearn) is an Agentic AI-powered learning platform delivering personalized practice, adaptive study sessions, and deep conceptual mastery.',
+    'Vyoma Learn is an Agentic AI-powered learning platform delivering personalized practice, adaptive study sessions, and deep conceptual mastery.',
   keywords: [
     'Vyoma Learn',
     'VyomaLearn',

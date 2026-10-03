@@ -2,7 +2,7 @@ import HomeView from "@/components/HomeView";
 
 export const metadata = {
   title: 'Vyoma Learn (VyomaLearn) — Agentic AI Personalized Learning Platform',
-  description: 'Vyoma Learn (VyomaLearn) is an Agentic AI-powered learning platform delivering personalized practice, adaptive study sessions, and deep conceptual mastery from basics to advanced topics.',
+  description: 'Vyoma Learn is an Agentic AI-powered learning platform delivering personalized practice, adaptive study sessions, and deep conceptual mastery from basics to advanced topics.',
   keywords: [
     'Vyoma Learn',
     'VyomaLearn',

@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Privacy Policy | Vyoma Learn',
-  description: 'Privacy Policy for Vyoma Learn (VyomaLearn).',
+  description: 'Privacy Policy for Vyoma Learn.',
 };
 
 export default function PrivacyPage() {

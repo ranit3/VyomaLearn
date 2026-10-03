@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Terms of Service | Vyoma Learn',
-  description: 'Terms of Service for Vyoma Learn (VyomaLearn).',
+  description: 'Terms of Service for Vyoma Learn.',
 };
 
 export default function TermsPage() {
