@@ -12,7 +12,7 @@ import ReviewsGallery from './ReviewsGallery';
 import HomeBlogSection from './HomeBlogSection';
 import HomeFAQSection from './HomeFAQSection';
 
-const DYNAMIC_WORDS = ["Learning,", "Studying,", "Discovering,"];
+const DYNAMIC_WORDS = ["Learning,", "Studying,", "Planning,"];
 
 export default function HomeView() {
   const [wordIndex, setWordIndex] = useState(0);

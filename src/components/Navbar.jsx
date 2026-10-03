@@ -13,10 +13,10 @@ export default function Navbar() {
 
   return (
     <header className="relative w-full z-50 px-4 sm:px-6 py-4 md:py-6 bg-transparent">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 relative">
         <Link 
           href="/" 
-          className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0" 
+          className="flex items-center gap-2.5 sm:gap-3.5 group shrink-0 z-10" 
           title="Vyoma Learn (VyomaLearn)" 
           aria-label="Vyoma Learn Home"
         >
@@ -29,8 +29,8 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 lg:gap-10">
+        {/* Desktop Nav Centered */}
+        <nav className="hidden md:flex items-center gap-8 lg:gap-10 absolute left-1/2 -translate-x-1/2">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.path;
             return (
