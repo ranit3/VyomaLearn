@@ -105,9 +105,12 @@ export default async function BlogPostPage({ params }) {
     }
   };
 
-  // Sanitize content: strip any HTML comments (placeholders), clean LaTeX math, and normalize typography
+  // Sanitize content: unescape newlines, strip any HTML comments (placeholders), clean LaTeX math, and normalize typography
   const articleBody = (post.content || '')
+    .replace(/\\r\\n/g, '\n')
+    .replace(/\\n/g, '\n')
     .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/^#\s+[^\n]+\n+/, '')
     .replace(/\$\int\s*\int_?R?\s*f\(x,y\)\s*dA\$/g, '∬_R f(x,y) dA')
     .replace(/\$([^$]+)\$/g, '$1')
     .replace(/([^\s])—([^\s])/g, '$1 — $2');
